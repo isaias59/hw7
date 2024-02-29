@@ -4,6 +4,8 @@
 #include <iomanip>
 #include "array.hpp"
 #include "matrix.hpp"
+#include "int_array.hpp"
+
 
 using namespace std;
 
