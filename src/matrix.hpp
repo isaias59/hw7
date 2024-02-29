@@ -1,92 +1,104 @@
-#ifndef ARRAY_HPP
-#define ARRAY_HPP
+#ifndef MATRIX_HPP
+#define MATRIX_HPP
 
+#include "array.h"
 #include <iostream>
-#include <sstream>
-#include <iomanip>
-#include <utility>
 
-template<typename T>
-class Array {
+template <typename T>
+class Matrix {
 public:
-    Array() : len(0), buf(nullptr) {}
+    Matrix();
 
-    explicit Array(int len) : len(len), buf(new T[len]) {}
+    Matrix(int rows, int cols);
 
-    Array(const Array& other) : len(other.len), buf(new T[other.len]) {
-        for (int i = 0; i < len; ++i) {
-            buf[i] = other.buf[i];
-        }
-    }
+    Array<T>& operator[](int row);
+    const Array<T>& operator[](int row) const;
 
-    Array(Array&& other) noexcept : len(0), buf(nullptr) {
-        swap(*this, other);
-    }
+    int num_rows() const;
+    int num_cols() const;
 
-    friend void swap(Array& lhs, Array& rhs) noexcept {
-        std::swap(lhs.len, rhs.len);
-        std::swap(lhs.buf, rhs.buf);
-    }
+    void fill(const T& val);
 
-    Array& operator=(const Array& other) {
-        if (this != &other) {
-            Array temp(other);
-            swap(*this, temp);
-        }
-        return *this;
-    }
-
-    Array& operator=(Array&& other) noexcept {
-        swap(*this, other);
-        return *this;
-    }
-
-    ~Array() {
-        delete[] buf;
-    }
-
-    int length() const {
-        return len;
-    }
-
-    T& operator[](int index) {
-        return buf[index];
-    }
-
-    const T& operator[](int index) const {
-        return buf[index];
-    }
-
-    void fill(const T& val) {
-        for (int i = 0; i < len; ++i) {
-            buf[i] = val;
-        }
-    }
+    
+    template <typename Fn>
+    void fill_with_fn(Fn fn);
 
 private:
-    int len;
-    T* buf;
+    int rows, cols;
+    Array<Array<T>> data;
 };
 
-template<typename T>
-inline std::ostream& operator<<(std::ostream& out, const Array<T>& array) {
-    std::ostringstream temp;
-    temp << std::setprecision(2) << std::fixed << std::right;
+template <typename T>
+Matrix<T>::Matrix() : rows(0), cols(0) {}
 
-    for (int i = 0; i < array.length(); ++i) {
-        temp << std::setw(8) << array[i];
+template <typename T>
+Matrix<T>::Matrix(int rows, int cols) : rows(rows), cols(cols), data(rows) {
+    for (int i = 0; i < rows; ++i) {
+        data[i] = Array<T>(cols);
     }
+}
 
-    out << temp.str();
+
+template <typename T>
+Array<T>& Matrix<T>::operator[](int row) {
+    return data[row];
+}
+
+template <typename T>
+const Array<T>& Matrix<T>::operator[](int row) const {
+    return data[row];
+}
+
+template <typename T>
+int Matrix<T>::num_rows() const {
+    return rows;
+}
+
+template <typename T>
+int Matrix<T>::num_cols() const {
+    return cols;
+}
+
+template <typename T>
+void Matrix<T>::fill(const T& val) {
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            data[i][j] = val;
+        }
+    }
+}
+
+template <typename T>
+template <typename Fn>
+void Matrix<T>::fill_with_fn(Fn fn) {
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            data[i][j] = fn(i, j);
+        }
+    }
+}
+
+template <typename T>
+std::ostream& operator<<(std::ostream& out, const Matrix<T>& matrix) {
+    for (int i = 0; i < matrix.num_rows(); ++i) {
+        for (int j = 0; j < matrix.num_cols(); ++j) {
+            out << matrix[i][j] << ' ';
+        }
+        out << '\n';
+    }
     return out;
 }
 
-template<typename T>
-inline std::istream& operator>>(std::istream& in, Array<T>& array) {
-    for (int i = 0; i < array.length(); ++i) {
-        in >> array[i];
+template <typename T>
+std::istream& operator>>(std::istream& in, Matrix<T>& matrix) {
+    for (int i = 0; i < matrix.num_rows(); ++i) {
+        for (int j = 0; j < matrix.num_cols(); ++j) {
+            in >> matrix[i][j];
+        }
     }
     return in;
 }
 
 #endif
+
+
