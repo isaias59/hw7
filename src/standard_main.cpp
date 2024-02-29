@@ -2,8 +2,8 @@
 #include <iostream>
 #include <numbers>
 #include <iomanip>
-#include "array.h"
-#include "matrix.h"
+#include "array.hpp"
+#include "matrix.hpp"
 
 using namespace std;
 
