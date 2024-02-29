@@ -1,7 +1,7 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
-#include "array.h"
+#include "array.hpp"
 #include <iostream>
 
 template <typename T>
