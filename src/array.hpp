@@ -49,11 +49,19 @@ public:
         return len;
     }
 
-    T& operator[](int index) {
+const T& operator[](int index) const {
+        if (!in_bounds(index)) {
+            std::string message = "Exception operator[](" + std::to_string(index) + ") Out Of Range";
+            throw std::out_of_range(message);
+        }
         return buf[index];
     }
 
-    const T& operator[](int index) const {
+    T& operator[](int index) {
+        if (!in_bounds(index)) {
+            std::string message = "Exception operator[](" + std::to_string(index) + ") Out Of Range";
+            throw std::out_of_range(message);
+        }
         return buf[index];
     }
 
@@ -72,6 +80,10 @@ public:
 private:
     int len;
     T* buf;
+    bool in_bounds(int index) const 
+        {
+            return index >= 0 && index < len;
+        }
 };
 
 template<typename T>
